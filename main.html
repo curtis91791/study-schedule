@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Schedule</title>
+    <link rel="stylesheet" href="display.css">
+<head>
+<body>
+    <header>Your Class Schedule</header>
+    <div class="table">
+        <table class="tablein">
+            <caption></caption>
+            <thead>
+                <tr>
+                    <th scope="col">科目</th>
+                    <th scope="col">時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>計組&計結</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>演算法</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>作業系統</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>資料結構</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>離散數學</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>線性代數</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <section class="list" name="list">
+        <div class="one">
+            <select class="sel" name="sel">
+                <option value="計組&計結">計組&計結</option>
+                <option value="演算法">演算法</option>
+                <option value="作業系統">作業系統</option>
+                <option value="資料結構">資料結構</option>
+                <option value="離散數學">離散數學</option>
+                <option value="線性代數">線性代數</option>
+            </select>
+        </div>
+        <div class="two">
+            <input type="text" name="input" class="time" placeholder=" 早安你好~">
+        </div>
+        <div class="three">
+            <button class="add" name="add">新增</button>  
+        </div>
+
+    </section>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const selectElement = document.querySelector(".sel");
+            const inputElement = document.querySelector(".time");
+            const buttonElement = document.querySelector(".add");
+            const tableRows = document.querySelectorAll(".tablein tbody tr");
+        
+            // **載入 LocalStorage 資料**
+            function loadSavedData() {
+                tableRows.forEach(row => {
+                    const subject = row.children[0].innerText;
+                    const savedTime = localStorage.getItem(subject);
+                    if (savedTime) {
+                        row.children[1].innerText = savedTime;
+                    }
+                });
+            }
+            loadSavedData(); // 初始化時載入
+        
+            // **按鈕點擊事件**
+            buttonElement.addEventListener("click", function () {
+                const selectedSubject = selectElement.value;
+                const inputTime = inputElement.value.trim();
+        
+                if (inputTime === "") {
+                    alert("請輸入時間！");
+                    return;
+                }
+        
+                let updated = false;
+                tableRows.forEach(row => {
+                    const subject = row.children[0].innerText;
+                    if (subject === selectedSubject) {
+                        row.children[1].innerText = inputTime;
+                        localStorage.setItem(subject, inputTime); // **存入 localStorage**
+                        updated = true;
+                    }
+                });
+        
+                if (!updated) {
+                    alert("找不到對應的科目！");
+                }
+            });
+        });
+    </script>
+        
+</body>
+</html>
