@@ -64,51 +64,44 @@
         </div>
 
     </section>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const selectElement = document.querySelector(".sel");
-            const inputElement = document.querySelector(".time");
-            const buttonElement = document.querySelector(".add");
-            const tableRows = document.querySelectorAll(".tablein tbody tr");
-        
-            // **載入 LocalStorage 資料**
-            function loadSavedData() {
-                tableRows.forEach(row => {
-                    const subject = row.children[0].innerText;
-                    const savedTime = localStorage.getItem(subject);
-                    if (savedTime) {
-                        row.children[1].innerText = savedTime;
+         <script>
+        const sheetURL = "https://script.google.com/macros/s/AKfycbz-HIGGQ7nvQv-2dFuijOK78YW6FqjjB5zBiJc8IyxfAb2oFjeNAZNaeMTQZU6Jg_5s/exec"
+
+        // **讀取資料**
+        async function loadSchedule() {
+            const response = await fetch(sheetURL);
+            const data = await response.json();
+            
+            data.forEach(item => {
+                document.querySelectorAll("tbody tr").forEach(row => {
+                    if (row.children[0].innerText === item.subject) {
+                        row.children[1].innerText = item.time;
                     }
                 });
-            }
-            loadSavedData(); // 初始化時載入
-        
-            // **按鈕點擊事件**
-            buttonElement.addEventListener("click", function () {
-                const selectedSubject = selectElement.value;
-                const inputTime = inputElement.value.trim();
-        
-                if (inputTime === "") {
-                    alert("請輸入時間！");
-                    return;
-                }
-        
-                let updated = false;
-                tableRows.forEach(row => {
-                    const subject = row.children[0].innerText;
-                    if (subject === selectedSubject) {
-                        row.children[1].innerText = inputTime;
-                        localStorage.setItem(subject, inputTime); // **存入 localStorage**
-                        updated = true;
-                    }
-                });
-        
-                if (!updated) {
-                    alert("找不到對應的科目！");
-                }
             });
+        }
+        
+        // **更新資料**
+        async function updateSchedule(subject, time) {
+            await fetch(sheetURL + `?subject=${subject}&time=${time}`, { method: "POST" });
+            loadSchedule(); // 重新讀取資料
+        }
+        
+        document.querySelector(".add").addEventListener("click", function () {
+            const selectedSubject = document.querySelector(".sel").value;
+            const inputTime = document.querySelector(".time").value.trim();
+        
+            if (inputTime === "") {
+                alert("請輸入時間！");
+                return;
+            }
+        
+            updateSchedule(selectedSubject, inputTime);
         });
-    </script>
+        
+        // **頁面加載時讀取資料**
+        loadSchedule();
+        </script>
         
 </body>
 </html>
